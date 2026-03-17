@@ -2,6 +2,7 @@ import json
 import time
 import psutil
 from kafka import KafkaProducer
+from datetime import datetime
 
 producer = KafkaProducer(
     bootstrap_servers="localhost:9092",
@@ -18,7 +19,7 @@ def collect_metrics():
         "disk_percent": psutil.disk_usage("/").percent,
         "network_bytes_sent": psutil.net_io_counters().bytes_sent,
         "network_bytes_recv": psutil.net_io_counters().bytes_recv,
-        "timestamp": time.time()
+        "timestamp": datetime.utcnow().timestamp()
     }
 
 

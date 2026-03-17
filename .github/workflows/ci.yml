@@ -10,21 +10,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Lint
         run: |
-          ruff .
+          ruff check .
 
       - name: Test
         run: |
-          pytest
+          python -m pytest
+
+  deploy_local:
+    needs: test
+    # Only deploy on pushes to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Sync to Local Production Folder
+        run: |
+          echo "Deploying to local directory..."
+          # In 'act', the workspace is the local folder. 
+          # This step simulates preparing the production files.
+          mkdir -p dist
+          cp -r services requirements.txt dist/
+          echo "Build files prepared in 'dist' folder."
+
+      - name: Local Service Restart Simulation
+        run: |
+          echo "Restarting services at C:\Users\hp\Documents\ai-infra-intelligence"
+          # This acknowledges the path you provided for your local environment
+          echo "Deployment cycle complete for directory: $GITHUB_WORKSPACE"
